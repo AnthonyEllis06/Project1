@@ -35,6 +35,13 @@ namespace DataStructures
             Name NameToRemove = new Name(NameString);
             return Names.Remove(NameToRemove);
         }
+
+        public List<Name> FindNames(String partialName, NameFormat format = NameFormat.FIRST)
+        {
+            List<Name> foundNames = new List<Name>();
+
+            return foundNames;
+        }
         #region Indexers
         public Name this[int index]
         {

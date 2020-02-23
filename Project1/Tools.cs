@@ -98,6 +98,17 @@ namespace DataStructures
         #endregion
         #region Display Methods
 
+        /// <summary>
+        /// Displays the list.
+        /// </summary>
+        /// <param name="DisplayList">The list to be displayed.</param>
+        public static void DisplayList(List<String> DisplayList)
+        {
+            foreach (String ListItem in DisplayList)
+            {
+                Console.WriteLine(ListItem);
+            }
+        }
         /// <summary>Setups the specified title.</summary>
         /// <param name="Title">  The title for the Console Window</param>
         /// <param name="Message">A welcome message, default: null;</param>

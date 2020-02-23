@@ -22,6 +22,6 @@ namespace DataStructures
 
     enum NameFormat
     {
-        ORIGINAl = 1, FIRST, LAST, RETURN
+        ORIGINAL = 1, FIRST, LAST, RETURN
     }
 }
