@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -9,10 +10,13 @@ namespace DataStructures
     {
         #region Properites
 
+        public String Prefix { get; set; }
         public String First { get; set; }
+        public String Middle { get; set; }
         public String Last { get; set; }
+        public String Suffix { get; set; }
         public String Original { get; set; }
-        private Regex pattern;
+        //private Regex pattern;
         #endregion
         #region Constructors
         public Name()
@@ -25,7 +29,40 @@ namespace DataStructures
         }
         public Name(String NameString)
         {
-            pattern = new Regex(@"");
+            
+            String[] nameParts = Tools.Tokenize(NameString," ");
+            Original = NameString;
+            Match m;
+            String Pattern = @"((\A[Dr\.]+|(M?r?s?)\.))";
+            m = new Regex(Pattern).Match(NameString);
+            Prefix = m.Value;
+            NameString = NameString.Remove(m.Index, m.Value.Length);
+
+            Pattern = @"(\b[iIvV]+\z(?!\.))|([JS]r\.)";
+            m = new Regex(Pattern).Match(NameString);
+            Suffix = m.Value;
+            NameString = NameString.Remove(m.Index, m.Value.Length);
+
+            Pattern = @"(\w+\S?\w+?$)|(\w+\,)";
+            m = new Regex(Pattern).Match(NameString);
+            Last = m.Value;
+            NameString = NameString.Remove(m.Index, m.Value.Length);
+
+            Console.WriteLine(Original);
+            Console.WriteLine(Prefix+Last+Suffix);
+            //Regex pattern = new Regex(@"(?<prefix>((\b\A[Dr\.]+|(M?r?s?)\.\b)))|(?<suffix>(\b[iIvV]+\z(?!\.))|([JS]r\.))|(?<first>((\b\A[\w]+\.?.(?!\,)\b)|((?<=\,\s)\w+\b\.?)))|(?<last>((\w+\S\w+$)|(\w+\,)))|(?<middle>\b\w+\.?\,?)");
+            // MatchCollection matchCollection = pattern.Matches(NameString);
+            //foreach (Match m in matchCollection)
+            //{
+            //if (m.Groups["first"] != null && m.Success)
+            //First = m.Groups["first"].ToString();
+            //else if (m.Groups["last"] != null && m.Success)
+            //Last = m.Groups["last"].Value;
+            //}
+
+            //Console.WriteLine(Original);
+            //Console.WriteLine("first: "+First+"Last "+Last+matchCollection.Count);
+            
         }
 
         #region IComparable<Name> implementation

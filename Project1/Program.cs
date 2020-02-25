@@ -12,14 +12,27 @@ namespace DataStructures
         [STAThread]
         static void Main(string[] args)
         {
+            String FileName = Tools.OpenDialog("Find Names", "text files|*.txt");
+            String[] FileContents = Tools.FileToString(FileName);
+            foreach (String line in FileContents)
+            {
+                Name temp = new Name(line);
+            }
+            Tools.PressAnyKey();
+
+        }
+
+        static void other()
+        {
             #region setup
             String welcome = "Welcome to NameList!";
-            Tools.setup("Name List",welcome);
+            Tools.setup("Name List", welcome);
             Tools.PressAnyKey();
             #endregion
             #region Get User Info
             Regex emailPat = new Regex(@"([\w\W]+)(@)([\w]+)[\.](com|edu)");
             Regex phonePat = new Regex(@"\(?[0-9]{3}\)?\s?[0-9]{3}\-?[0-9]{4}");
+
             Console.WriteLine("What is your name?");
             Name UserStringName = new Name(Console.ReadLine());
             Console.WriteLine("What is your email address?");
@@ -28,10 +41,9 @@ namespace DataStructures
             String PhoneNumber = Console.ReadLine();
             #endregion
             NameChoice nameChoice;
- 
         }
 
-        #region Menus
+       #region Menus
         public static void MainMenu()
         {
             UtilityNamespace.Menu main = new UtilityNamespace.Menu("Main Menu");
