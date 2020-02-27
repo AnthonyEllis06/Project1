@@ -9,6 +9,7 @@ namespace DataStructures
         #region Properties
         private List<Name> Names;
         public int Count { get { return Names.Count; } }
+        public NameFormat Format { get; set; } = NameFormat.ORIGINAL;
         #endregion
         #region Constructor
         public NameList()
@@ -17,30 +18,78 @@ namespace DataStructures
         }
         public NameList(String[] StringNameArray)
         {
+            Names = new List<Name>();
             int l = StringNameArray.Length;
             for(int i = 0; i < l; i++)
             {
-                if(StringNameArray[i].Length>1)
-                    Names.Add(new Name(StringNameArray[i]));
+                Names.Add(new Name(StringNameArray[i]));
             }
         }
         #endregion
-        #region Methods
+        #region Methods        
+        /// <summary>
+        /// Adds a Name to the NameList
+        /// </summary>
+        /// <param name="NewName">The Name object to be added</param>
         public void Add(Name NewName)
         {
             Names.Add(NewName);
-        }
+        }        
+        /// <summary>
+        /// Removes the A name Equal to string passed in from the NameList
+        /// </summary>
+        /// <param name="NameString">The name string.</param>
+        /// <returns>Returns boolean true if item removed and boolean false if not removed</returns>
         public bool Remove(String NameString)
         {
             Name NameToRemove = new Name(NameString);
             return Names.Remove(NameToRemove);
+        }        
+        /// <summary>
+        /// Finds all names that are similar to a partial name
+        /// </summary>
+        /// <param name="partialName">A partial part of a name</param>
+        /// <param name="format">The format choice to display name</param>
+        /// <returns>List of Names with partial matches in the format of choice or first if no
+        /// format is chosen</returns>
+        public NameList FindNames(String partialName, NameFormat format = NameFormat.FIRST)
+        {
+            Name Partial = new Name(partialName);
+            NameList foundNames = new NameList();
+            foreach (Name name in Names)
+        	{
+                if(Partial.Prefix == name.Prefix||Partial.First ==name.First||Partial.Middle==name.Middle||Partial.Last==name.Last||Partial.Suffix==name.Suffix )
+                    foundNames.Add(name);
+	        }
+            return foundNames;
         }
 
-        public List<Name> FindNames(String partialName, NameFormat format = NameFormat.FIRST)
+        public List<String> SortFirst()
         {
-            List<Name> foundNames = new List<Name>();
-
-            return foundNames;
+            Names.Sort(new Name());
+            List<String> StringNames = new List<String>();
+            foreach (Name n in Names)
+            {
+                StringNames.Add(n.FirstNameFirst());
+            }
+            return StringNames;
+        }
+        public List<String> SortLast()
+        {
+            Names.Sort();
+            List<String> StringNames = new List<String>();
+            foreach (Name n in Names)
+            {
+                StringNames.Add(n.LastNameFirst());
+            }
+            return StringNames;
+        }
+        public void Display()
+        {
+            foreach (Name n in Names)
+	        {
+                Console.WriteLine(n.NameToString(Format));
+	        }
         }
         #region Indexers
         public Name this[int index]

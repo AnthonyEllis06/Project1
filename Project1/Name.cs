@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace DataStructures
 {
-    class Name : IEquatable<Name>, IComparable<Name>
+    class Name : IEquatable<Name>, IComparable<Name>,IComparer<Name>
     {
         #region Properites
 
@@ -18,58 +18,112 @@ namespace DataStructures
         public String Original { get; set; }
         //private Regex pattern;
         #endregion
-        #region Constructors
+        #region Constructors        
+        /// <summary>
+        /// Default null Constructor <see cref="Name"/> class.
+        /// </summary>
         public Name()
         {
-
-        }
+            Prefix = null;
+            First = null;
+            Middle = null;
+            Last = null;
+            Suffix = null;
+        }        
+        /// <summary>
+        /// Copy constructor<see cref="Name"/> class.
+        /// </summary>
+        /// <param name="NewName">A name object copy</param>
         public Name(Name NewName)
         {
-
-        }
+            Prefix=NewName.Prefix;
+            First = NewName.First;
+            Middle = NewName.Middle;
+            Last = NewName.Last;
+            Suffix = NewName.Suffix;
+            Original = NewName.Original;
+        }        
+        /// <summary>
+        /// Constructor from String object <see cref="Name"/> class.
+        /// </summary>
+        /// <param name="NameString">String name must be in American Format</param>
+        /// 
         public Name(String NameString)
         {
             
             String[] nameParts = Tools.Tokenize(NameString," ");
             Original = NameString;
             Match m;
-            String Pattern = @"((\A[Dr\.]+|(M?r?s?)\.))";
+            String Pattern = @"\b(([Dr].)|([Mr?s?]{2,3}))\.";
             m = new Regex(Pattern).Match(NameString);
             Prefix = m.Value;
+            Prefix.Trim();
             NameString = NameString.Remove(m.Index, m.Value.Length);
 
-            Pattern = @"(\b[iIvV]+\z(?!\.))|([JS]r\.)";
+            Pattern = @"\b(([iIvV]+(?!\.))|([JR]r\.)|([PMJ].[dD]?))\Z";
             m = new Regex(Pattern).Match(NameString);
             Suffix = m.Value;
+            Suffix.Trim();
             NameString = NameString.Remove(m.Index, m.Value.Length);
 
             Pattern = @"(\w+\S?\w+?$)|(\w+\,)";
             m = new Regex(Pattern).Match(NameString);
             Last = m.Value;
+            Last.Trim();
             NameString = NameString.Remove(m.Index, m.Value.Length);
 
-            Console.WriteLine(Original);
-            Console.WriteLine(Prefix+Last+Suffix);
-            //Regex pattern = new Regex(@"(?<prefix>((\b\A[Dr\.]+|(M?r?s?)\.\b)))|(?<suffix>(\b[iIvV]+\z(?!\.))|([JS]r\.))|(?<first>((\b\A[\w]+\.?.(?!\,)\b)|((?<=\,\s)\w+\b\.?)))|(?<last>((\w+\S\w+$)|(\w+\,)))|(?<middle>\b\w+\.?\,?)");
-            // MatchCollection matchCollection = pattern.Matches(NameString);
-            //foreach (Match m in matchCollection)
-            //{
-            //if (m.Groups["first"] != null && m.Success)
-            //First = m.Groups["first"].ToString();
-            //else if (m.Groups["last"] != null && m.Success)
-            //Last = m.Groups["last"].Value;
-            //}
+            Pattern = @"\b(([\w]+\.?.(?!\,))|((?<=\,\s)\w+))";
+            m = new Regex(Pattern).Match(NameString);
+            First = m.Value;
+            First.Trim();
+            NameString = NameString.Remove(m.Index, m.Value.Length);
+            Middle = NameString;
 
-            //Console.WriteLine(Original);
-            //Console.WriteLine("first: "+First+"Last "+Last+matchCollection.Count);
-            
+        }        
+        /// <summary>
+        /// Converts the Name to a String based on the format variable passed
+        /// </summary>
+        /// <param name="format">A NameFormat Choice</param>
+        /// <returns>The Full String Representation of the Name based on the Format Choice</returns>
+        public string NameToString(NameFormat format)
+        {
+            String nameToReturn = null;
+            String s = " ";
+            switch (format)
+            {
+                case NameFormat.FIRST:
+                    nameToReturn = Prefix.Trim()+s+First.Trim()+s+Middle.Trim()+s+Last.Trim()+s+Suffix.Trim();
+                    break;
+                case NameFormat.LAST:
+                    nameToReturn = Prefix.Trim()+s+Last.Trim()+","+s+First.Trim()+s+Middle.Trim()+s+Suffix.Trim();
+                    break;
+                case NameFormat.ORIGINAL:
+                    nameToReturn = Original;
+                    break;
+            }
+
+            return nameToReturn.Trim();
+        }
+        public String FirstNameFirst()
+        {
+            return NameToString(NameFormat.FIRST);
+        }
+        public String LastNameFirst()
+        {
+            return NameToString(NameFormat.LAST);
+        }
+        #region IComparable<Name> implementation
+        public int Compare(Name x,Name y)
+        {
+            if(!x.First.Equals(y.First))
+                return x.First.CompareTo(y.First);
+            return x.Last.CompareTo(y.Last);
         }
 
-        #region IComparable<Name> implementation
         /// <summary>
-        /// Ordering comparer for two Name objects
+        /// Ordering comparer for two Name objects by Last Name
         /// </summary>
-        /// <param name="name">  "name"&gt;the name to come this objects name to</param>
+        /// <param name="name"> the name to compare this objects name to</param>
         /// <returns>int 0 if equal; >0 if this name is greater;<0 otherwise</returns>
         public int CompareTo(Name name)
         {
@@ -84,15 +138,15 @@ namespace DataStructures
         /// Equality comparer for two Name objects
         /// </summary>
         /// <param name="other">  true if first and last names of this name are equal to Other.First and Other.Last, respectively</param>
-        /// <returns></returns>
+        /// <returns>Boolean True if Equal and false if not equal</returns>
         public bool Equals(Name other)
         {
             return (First.Equals(other.First) && Last.Equals(other.Last));
         }
 
-        /// <summary>  Overide of Object.Equals</summary>
+        /// <summary>  Override of Object.Equals</summary>
         /// <param name="obj">  object to which this object is compared to.</param>
-        /// <returns></returns>
+        /// <returns>Results from the Class Equals method</returns>
         /// <exception cref="ArgumentException">Cannot compare a Name and a obj object type.</exception>
         public override bool Equals(object obj)
         {

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using UtilityNamespace;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 
 namespace DataStructures
@@ -12,24 +13,21 @@ namespace DataStructures
         [STAThread]
         static void Main(string[] args)
         {
-            String FileName = Tools.OpenDialog("Find Names", "text files|*.txt");
-            String[] FileContents = Tools.FileToString(FileName);
-            foreach (String line in FileContents)
-            {
-                Name temp = new Name(line);
-            }
-            Tools.PressAnyKey();
-
-        }
-
-        static void other()
-        {
             #region setup
             String welcome = "Welcome to NameList!";
             Tools.setup("Name List", welcome);
             Tools.PressAnyKey();
             #endregion
             #region Get User Info
+            
+            #endregion
+
+            MainMenu();
+
+        }
+
+        static void other()
+        {
             Regex emailPat = new Regex(@"([\w\W]+)(@)([\w]+)[\.](com|edu)");
             Regex phonePat = new Regex(@"\(?[0-9]{3}\)?\s?[0-9]{3}\-?[0-9]{4}");
 
@@ -37,10 +35,18 @@ namespace DataStructures
             Name UserStringName = new Name(Console.ReadLine());
             Console.WriteLine("What is your email address?");
             String Email = Console.ReadLine();
+            while (!emailPat.Match(Email).Success)
+            {
+                Console.WriteLine("Email is not valid please Enter your email again");
+                Email = Console.ReadLine();
+            }
             Console.WriteLine("What is your phone number?");
             String PhoneNumber = Console.ReadLine();
-            #endregion
-            NameChoice nameChoice;
+            while (!phonePat.Match(PhoneNumber).Success)
+            {
+                Console.WriteLine("Phone Number is not valid please Enter your Phone Number again");
+                PhoneNumber = Console.ReadLine();
+            }
         }
 
        #region Menus
@@ -61,6 +67,14 @@ namespace DataStructures
             String FileName = Tools.OpenDialog("Find Names", "text files|*.txt");
             String[] FileContents = Tools.FileToString(FileName);
             NameList Names = new NameList(FileContents);
+            for(int i = 0;i<Names.Count;i++)
+            {
+                Name n = Names[i];
+                Console.WriteLine(n.NameToString(NameFormat.FIRST));
+                Console.WriteLine(n.NameToString(NameFormat.ORIGINAL));
+            }
+
+            Tools.PressAnyKey();
             UtilityNamespace.Menu NameMenu = new UtilityNamespace.Menu("Name Menu");
             NameMenu = NameMenu + "Add Name" + "Delete Name" + "List Names" + "Find Names" + "Return to Main Menu";
             NameChoice nameChoice = (NameChoice) NameMenu.GetChoice();
@@ -81,12 +95,25 @@ namespace DataStructures
                         case NameChoice.NAME:
                             Console.WriteLine("Which Name would you like to find?");
                             String nameToFind = Console.ReadLine();
-                            Console.WriteLine("Which format would you like the names to be in?");
-
-                            //Tools.DisplayList(Names.FindNames(nameToFind));
+                            Name FoundName= Names[nameToFind];
+                            if(FoundName!=null)
+                            {
+                                Console.WriteLine("Found the name {0}\nWhat would you like to do with it?",FoundName.NameToString(NameFormat.ORIGINAL));
+                                UtilityNamespace.Menu NameAction = new UtilityNamespace.Menu("Name Actions");
+                                NameAction = NameAction+"Delete The Name"+"Nothing";
+                                int choice = NameAction.GetChoice();
+                                if(choice==1)
+                                    Names=Names-FoundName;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Name was not found");
+                                Tools.PressAnyKey();
+                            }
                             break;
                         case NameChoice.LIST:
-                            FormatMenu();
+                            Console.WriteLine("Which format would you like the name(s) to be in?");
+                            FormatMenu(Names);
                             break;
                         case NameChoice.RETURN:
                             break;
@@ -95,7 +122,7 @@ namespace DataStructures
             }
         }
 
-        public static void FormatMenu()
+        public static void FormatMenu(NameList listOFNames)
         {
             UtilityNamespace.Menu FormatMenu = new UtilityNamespace.Menu("Format Menu");
             FormatMenu = FormatMenu + "Original Format" + "First Name First" + "Last Name First" + "Return to Name Menu";
@@ -103,17 +130,20 @@ namespace DataStructures
             switch (formatChoice)
             {
                 case NameFormat.ORIGINAL:
+                    listOFNames.Format = NameFormat.ORIGINAL;
+                    listOFNames.Display();
                     break;
                 case NameFormat.FIRST:
+                    Tools.DisplayList(listOFNames.SortFirst());
                     break;
                 case NameFormat.LAST:
+                    Tools.DisplayList(listOFNames.SortLast());
                     break;
                 case NameFormat.RETURN:
                     Console.WriteLine("Returning to Name menu");
-                    Tools.PressAnyKey();
                     return;
             }
-
+            Tools.PressAnyKey();
             return;
 
         }
