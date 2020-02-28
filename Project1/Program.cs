@@ -1,4 +1,14 @@
-﻿using System;
+﻿//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//	Project:		Program 1 - NameList Class
+//	File Name:		Program.cs
+//	Description:	defines the driver for the program
+//	Course:			CSCI 2210-001 - Data Structures
+//	Author:			Anthony Ellis, ellisah@etsu.edu, East Tennessee State University
+//	Created:		Tuesday, Febuary 018, 2020
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+using System;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using UtilityNamespace;
@@ -10,7 +20,10 @@ namespace DataStructures
 {
     class Program
     {
+        /// <summary>  main is where the driver starts running the program</summary>
+        /// <param name="args">  areguments to be passed in from console</param>
         [STAThread]
+
         static void Main(string[] args)
         {
             #region setup
@@ -19,20 +32,17 @@ namespace DataStructures
             Tools.PressAnyKey();
             #endregion
             #region Get User Info
-            
-            #endregion
-
-            MainMenu();
-
-        }
-
-        static void other()
-        {
             Regex emailPat = new Regex(@"([\w\W]+)(@)([\w]+)[\.](com|edu)");
             Regex phonePat = new Regex(@"\(?[0-9]{3}\)?\s?[0-9]{3}\-?[0-9]{4}");
 
             Console.WriteLine("What is your name?");
-            Name UserStringName = new Name(Console.ReadLine());
+            String StringName = Console.ReadLine();
+            while (StringName == null)
+            {
+                Console.WriteLine("What is your name?");
+                StringName = Console.ReadLine();
+            }
+            Name UserName = new Name(StringName);
             Console.WriteLine("What is your email address?");
             String Email = Console.ReadLine();
             while (!emailPat.Match(Email).Success)
@@ -47,9 +57,17 @@ namespace DataStructures
                 Console.WriteLine("Phone Number is not valid please Enter your Phone Number again");
                 PhoneNumber = Console.ReadLine();
             }
+            #endregion
+            MainMenu();
+            Console.WriteLine("Goodbye {0}! \n The company will not be sending any spam email to {1}.\n " +
+                "We also will definitely not call you at {2}", UserName.NameToString(NameFormat.ORIGINAL),Email,PhoneNumber);
+            Tools.PressAnyKey();
+
         }
 
-       #region Menus
+        #region Menus
+
+        /// <summary>  runs the main menu for loading a file or quitting</summary>
         public static void MainMenu()
         {
             UtilityNamespace.Menu main = new UtilityNamespace.Menu("Main Menu");
@@ -62,23 +80,25 @@ namespace DataStructures
             }
         }
 
+        /// <summary>runs Name menu which controls and allows the user to change and edit the name list</summary>
         public static void NameMenu()
         {
             String FileName = Tools.OpenDialog("Find Names", "text files|*.txt");
+            if (FileName == null)
+                return;
+            bool ListChanged = false;
             String[] FileContents = Tools.FileToString(FileName);
             NameList Names = new NameList(FileContents);
             for(int i = 0;i<Names.Count;i++)
             {
-                Name n = Names[i];
-                Console.WriteLine(n.NameToString(NameFormat.FIRST));
-                Console.WriteLine(n.NameToString(NameFormat.ORIGINAL));
+                Console.WriteLine(Names[i].NameToString(NameFormat.ORIGINAL));
             }
 
             Tools.PressAnyKey();
             UtilityNamespace.Menu NameMenu = new UtilityNamespace.Menu("Name Menu");
-            NameMenu = NameMenu + "Add Name" + "Delete Name" + "List Names" + "Find Names" + "Return to Main Menu";
+            NameMenu = NameMenu + "Add Name" + "Delete Name" + "List Names" + "Find Name" + "Return to Main Menu";
             NameChoice nameChoice = (NameChoice) NameMenu.GetChoice();
-                while (nameChoice != NameChoice.RETURN)
+                while (nameChoice != NameChoice.QUIT)
                 {
                     switch (nameChoice)
                     {
@@ -86,42 +106,81 @@ namespace DataStructures
                             Console.WriteLine("Enter name to add");
                             Name newName = new Name(Console.ReadLine());
                             Names = Names + newName;
-                            break;
+                            Names.ListChange();
+                            ListChanged = true;
+                        break;
                         case NameChoice.DELETE:
                             Console.WriteLine("Which name would you like to remove?");
                             Name RemoveName = Names[Console.ReadLine()];
                             Names = Names - RemoveName;
-                            break;
+                            ListChanged = true;
+                        break;
+                        case NameChoice.LIST:
+                            Console.WriteLine("Which format would you like the name(s) to be in?");
+                            FormatMenu(Names);
+                        break;
                         case NameChoice.NAME:
                             Console.WriteLine("Which Name would you like to find?");
                             String nameToFind = Console.ReadLine();
-                            Name FoundName= Names[nameToFind];
-                            if(FoundName!=null)
+                            NameList FoundNames = Names.FindNames(nameToFind);
+                            Name FoundName;
+                            if (FoundNames.Count!=0)
                             {
-                                Console.WriteLine("Found the name {0}\nWhat would you like to do with it?",FoundName.NameToString(NameFormat.ORIGINAL));
-                                UtilityNamespace.Menu NameAction = new UtilityNamespace.Menu("Name Actions");
-                                NameAction = NameAction+"Delete The Name"+"Nothing";
-                                int choice = NameAction.GetChoice();
-                                if(choice==1)
-                                    Names=Names-FoundName;
+                            
+                                for ( int i = 1; i <= FoundNames.Count; i++)
+                                    {
+                                    Console.WriteLine("{0}. {1}",i, FoundNames[i-1].NameToString(NameFormat.FIRST));
+                                    }
+                                Console.WriteLine("These names were found, please select one. \n0 is if you did not see the name you were looking for");
+                            String s = Console.ReadLine();
+                            try
+                            {
+                                int input = Convert.ToInt32(Console.ReadLine());
+
+
+                                if (input != 0)
+                                {
+                                    Console.Clear();
+                                    FoundName = FoundNames[input];
+                                    Console.WriteLine("Found the name {0}\nWhat would you like to do with it?", FoundName.NameToString(NameFormat.ORIGINAL));
+                                    UtilityNamespace.Menu NameAction = new UtilityNamespace.Menu("Name Actions");
+                                    NameAction = NameAction + "Delete The Name" + "Nothing";
+                                    int choice = NameAction.GetChoice();
+                                    if (choice == 1)
+                                        Names = Names - FoundName;
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                Console.WriteLine("Invalid choice");
+                            }
+
                             }
                             else
                             {
                                 Console.WriteLine("Name was not found");
                                 Tools.PressAnyKey();
                             }
-                            break;
-                        case NameChoice.LIST:
-                            Console.WriteLine("Which format would you like the name(s) to be in?");
-                            FormatMenu(Names);
-                            break;
-                        case NameChoice.RETURN:
-                            break;
+                        break;
+                       
                     }
                     nameChoice = (NameChoice)NameMenu.GetChoice();
-            }
-        }
-
+                }
+                if (Names.ListChanged)
+                {
+                    UtilityNamespace.Menu SaveMenu = new UtilityNamespace.Menu("NameList has been changed, Would you like to save it to a file?");
+                    SaveMenu = SaveMenu + "Yes" + "No";
+                    int SaveChoice = SaveMenu.GetChoice();
+                    if (SaveChoice == 1)
+                    {
+                        Tools.SaveFileDialog("Save File", Names.ToArray(), "text files|*.txt");
+                    }
+                }
+                
+           }
+ 
+        /// <summary>  used to let user choose what format they want their names to be shown in.</summary>
+        /// <param name="listOFNames">  takes the list of names to be displayed</param>
         public static void FormatMenu(NameList listOFNames)
         {
             UtilityNamespace.Menu FormatMenu = new UtilityNamespace.Menu("Format Menu");
@@ -139,7 +198,7 @@ namespace DataStructures
                 case NameFormat.LAST:
                     Tools.DisplayList(listOFNames.SortLast());
                     break;
-                case NameFormat.RETURN:
+                case NameFormat.QUIT:
                     Console.WriteLine("Returning to Name menu");
                     return;
             }

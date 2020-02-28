@@ -11,17 +11,22 @@
 
 namespace DataStructures
 {
+
+    /// <summary>Enum for choices in main menu</summary>
     enum MainChoice
     {
         OPEN = 1, QUIT
     }
+
+    /// <summary>Enum for choices in the name menu</summary>
     enum NameChoice
     {
-        ADD = 1, DELETE, LIST, NAME, RETURN
+        ADD = 1, DELETE, LIST, NAME, QUIT
     }
 
+    /// <summary>enum for decining name format.</summary>
     enum NameFormat
     {
-        ORIGINAL = 1, FIRST, LAST, RETURN
+        ORIGINAL = 1, FIRST, LAST, QUIT
     }
 }

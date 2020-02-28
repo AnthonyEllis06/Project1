@@ -59,7 +59,7 @@ namespace DataStructures
         public static String OpenDialog(String Title,String Filter = "all files|*.*")
         {
             OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = Application.StartupPath;
+            dlg.InitialDirectory = @"..\..\DataFiles";
             dlg.Title = Title;
             dlg.Filter = Filter;
             if (dlg.ShowDialog() == DialogResult.Cancel)
@@ -67,6 +67,41 @@ namespace DataStructures
             return dlg.FileName;
         }
 
+        /// <summary>  Saves a String Array to a file using a file dialong</summary>
+        /// <param name="Title">  title of file dialog</param>
+        /// <param name="Contents">  string array to write to file</param>
+        /// <param name="Filter">  file filter</param>
+        /// <returns>returns boolean on if FileDialog worked or not</returns>
+        public static bool SaveFileDialog(String Title, String[] Contents, String Filter = "all files|*.*")
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.InitialDirectory = @"..\..\DataFiles";
+            dlg.Title = Title;
+            dlg.Filter = Filter;
+            if (dlg.ShowDialog() == DialogResult.Cancel)
+                return false;
+            StreamWriter writer = null;
+            try
+            {
+                writer = new StreamWriter(new FileStream(dlg.FileName, FileMode.Create, FileAccess.Write));
+                for (int line = 0; line < Contents.Length; line++)
+                {
+                    String n = Contents[line];
+                    writer.WriteLine(n);
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("File failed to process." + e.Message);
+                return false;
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.Close();
+            }
+        }
         /// <summary>Files to string.</summary>
         /// <param name="FileName">Name of the file.</param>
         /// <returns>Returns a string array of each line in the file</returns>
@@ -85,7 +120,7 @@ namespace DataStructures
             }
             catch(Exception e)
             {
-                Console.WriteLine("File failed to process.");
+                Console.WriteLine("File failed to process." + e.Message);
             }
             finally
             {
@@ -95,6 +130,7 @@ namespace DataStructures
             }
             return Contents.ToArray();
         }
+        
         #endregion
         #region Display Methods
 
