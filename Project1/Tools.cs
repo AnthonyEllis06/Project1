@@ -58,13 +58,13 @@ namespace DataStructures
         /// <returns>a string file name chosen. null if no file is chosen.</returns>
         public static String OpenDialog(String Title,String Filter = "all files|*.*")
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = @"..\..\DataFiles";
-            dlg.Title = Title;
-            dlg.Filter = Filter;
-            if (dlg.ShowDialog() == DialogResult.Cancel)
+            OpenFileDialog dlg = new OpenFileDialog();//create new dialog
+            dlg.InitialDirectory = @"..\..\DataFiles";//set initial directory
+            dlg.Title = Title;  //set title of dialog
+            dlg.Filter = Filter; //set file filter for dialog
+            if (dlg.ShowDialog() == DialogResult.Cancel) //if dialog ges canceled then it returns null
                 return null;
-            return dlg.FileName;
+            return dlg.FileName; //returns the name of file chosen
         }
 
         /// <summary>  Saves a String Array to a file using a file dialong</summary>
@@ -74,57 +74,57 @@ namespace DataStructures
         /// <returns>returns boolean on if FileDialog worked or not</returns>
         public static bool SaveFileDialog(String Title, String[] Contents, String Filter = "all files|*.*")
         {
-            SaveFileDialog dlg = new SaveFileDialog();
+            SaveFileDialog dlg = new SaveFileDialog(); //creates new save file dialog
             dlg.InitialDirectory = @"..\..\DataFiles";
             dlg.Title = Title;
             dlg.Filter = Filter;
             if (dlg.ShowDialog() == DialogResult.Cancel)
                 return false;
-            StreamWriter writer = null;
+            StreamWriter writer = null; //creates a streamWriter to allow writing to a file
             try
             {
-                writer = new StreamWriter(new FileStream(dlg.FileName, FileMode.Create, FileAccess.Write));
-                for (int line = 0; line < Contents.Length; line++)
+                writer = new StreamWriter(new FileStream(dlg.FileName, FileMode.Create, FileAccess.Write)); //defines the stream writer
+                for (int line = 0; line < Contents.Length; line++) //for each element in contents
                 {
-                    String n = Contents[line];
-                    writer.WriteLine(n);
+                    String n = Contents[line]; 
+                    writer.WriteLine(n); //write value of array at index to file
                 }
-                return true;
+                return true; //returns true because it completed
             }
             catch (Exception e)
             {
-                Console.WriteLine("File failed to process." + e.Message);
+                Console.WriteLine("File failed to process." + e.Message); //throws exceptions from the stream writer
                 return false;
             }
             finally
             {
-                if (writer != null)
+                if (writer != null) //close the file
                     writer.Close();
             }
         }
-        /// <summary>Files to string.</summary>
-        /// <param name="FileName">Name of the file.</param>
+        /// <summary>converts the file into a string array of each line</summary>
+        /// <param name="FileName">hte name of the file.</param>
         /// <returns>Returns a string array of each line in the file</returns>
         public static String[] FileToString(String FileName)
         {
-            StreamReader FileStream = null;
-            List<String> Contents = new List<String>();
+            StreamReader FileStream = null; //null filestream
+            List<String> Contents = new List<String>(); //empty string array
             try
             {
-                FileStream = new StreamReader(FileName);
-                while(FileStream.Peek()!=-1)
+                FileStream = new StreamReader(FileName); 
+                while(FileStream.Peek()!=-1) //while the stream reader keeps reading more lines
                 {
-                    Contents.Add(FileStream.ReadLine());
+                    Contents.Add(FileStream.ReadLine()); //adds line to string array
                 }
-                return Contents.ToArray();
+                return Contents.ToArray();//returns array of strings
             }
             catch(Exception e)
             {
-                Console.WriteLine("File failed to process." + e.Message);
+                Console.WriteLine("File failed to process." + e.Message); //exception thrown primarily by the stream reader
             }
             finally
             {
-                if (FileStream != null)
+                if (FileStream != null) //close file
                     FileStream.Close();
                 
             }
@@ -142,21 +142,21 @@ namespace DataStructures
         {
             foreach (String ListItem in DisplayList)
             {
-                Console.WriteLine(ListItem);
+                Console.WriteLine(ListItem); //writes line from list to console
             }
         }
-        /// <summary>Setups the specified title.</summary>
+        /// <summary>Setups the specified console</summary>
         /// <param name="Title">  The title for the Console Window</param>
         /// <param name="Message">A welcome message, default: null;</param>
         public static void setup(String Title,String Message=null)
         {
-            Console.BackgroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.White; //sets console back ground color
             Console.Clear();
-            Console.Title = Title;
+            Console.Title = Title; //sets title
 
             if (Message != null)
             {
-                Console.ForegroundColor = ConsoleColor.DarkBlue;
+                Console.ForegroundColor = ConsoleColor.DarkBlue; //sets font color
                 Console.WriteLine(Message);
             }
             

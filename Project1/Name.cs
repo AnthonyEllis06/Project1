@@ -86,70 +86,70 @@ namespace DataStructures
 
             if (NameParts.Length <= 1)
                 return;
-            List<String> nameParts = new List<String>(Tools.Tokenize(NameParts," "));
-            Original = NameParts;
+            List<String> nameParts = new List<String>(Tools.Tokenize(NameParts," ")); //tokenizes name into multiple names
+            Original = NameParts; //sets original name value
             Match m;
             #region Prefix
-            String Pattern = @"\b(([Dr].)|([Mr?s?]{2,3}))\.";
-            m = new Regex(Pattern).Match(nameParts.First<String>());
-            if (m.Success)
+            String Pattern = @"\b(([Dr].)|([Mr?s?]{2,3}))\.";//regex pattern for prefix
+            m = new Regex(Pattern).Match(nameParts.First<String>());//checks for match to prefix pattern only in the first element of the string array
+            if (m.Success)//if match found
             {
-                Prefix = nameParts.First<String>();
-                nameParts.Remove(nameParts[0]);
+                Prefix = nameParts.First<String>();//set prefix
+                nameParts.Remove(nameParts[0]);//remove prefix from name array
             }
-            if (nameParts.Count == 0)
+            if (nameParts.Count == 0)//if name parts is empty return
                 return;
             #endregion
             #region Suffix
-            Pattern = @"\b(([iIvV]+(?!\.))|([JR]r\.)|([PMJ].[dD]?))\Z";
-            m = new Regex(Pattern).Match(nameParts.Last<String>());
-            if (m.Success)
+            Pattern = @"\b(([iIvV]+(?!\.))|([JR]r\.)|([PMJ].[dD]?))\Z";//pattern for suffix
+            m = new Regex(Pattern).Match(nameParts.Last<String>());//checks only last index of name array
+            if (m.Success)//if match found
             {
-                Suffix = nameParts.Last<String>();
-                nameParts.Remove(nameParts.Last<String>());
+                Suffix = nameParts.Last<String>();//sets suffix
+                nameParts.Remove(nameParts.Last<String>());//removes suffix from name parts
             }
-            if (Suffix != null)
-                Suffix = ", " + Suffix;
+            if (Suffix != null)//if suffix isnt null
+                Suffix = ", " + Suffix;//adds comma and space for end of name
             if (nameParts.Count == 0)
                 return;
             #endregion
             #region Last Name
-            Pattern = @"\w+\,";
+            Pattern = @"\w+\,";//regex pattern for name
             Regex lastRegex = new Regex(Pattern);
             Last = null;
-            foreach(String namePart in nameParts)
+            foreach(String namePart in nameParts)//looks for pattern match in rest of array
             {
                 m = lastRegex.Match(namePart);
-                if (m.Success && Last == null)
+                if (m.Success && Last == null)//if there is a match
                     Last = namePart;
             }
-            if (Last == null)
-                Last = nameParts.Last<String>();
-            nameParts.Remove(Last);
-            if (Last.Contains(",")&& Last!=null)
+            if (Last == null)//if last is null
+                Last = nameParts.Last<String>();//sets last
+            nameParts.Remove(Last);//removes last name from name array
+            if (Last.Contains(",")&& Last!=null)//if last contains a comma and isnt null
                 Last = Last.Substring(0, Last.Length - 1);
-            if (nameParts.Count == 0)
+            if (nameParts.Count == 0)//if no more parts of name then return
                 return;
             #endregion
             #region First Name
-            Pattern = @"\b(([\w]+\.?.(?!\,))|((?<=\,\s)\w+))";
+            Pattern = @"\b(([\w]+\.?.(?!\,))|((?<=\,\s)\w+))";//regex pattern for First names
             Regex firstRegex = new Regex(Pattern);
             First = null;
-            foreach (String namePart in nameParts)
+            foreach (String namePart in nameParts)//looks for first name
             {
                 m = firstRegex.Match(namePart);
-                if (m.Success && First == null)
+                if (m.Success && First == null)//if first name is found
                     First = namePart;
             }
-            nameParts.Remove(First);
+            nameParts.Remove(First);//removes first name from name parts
             if (First.Contains(",")&&First!=null)
                 Last = First.Substring(0, Last.Length - 1);
             #endregion
             #region Middle Name
             Middle = null;
-            nameParts.ForEach(part => Middle = Middle + part.Trim());
+            nameParts.ForEach(part => Middle = Middle + part.Trim());//sets rest of name to be the middle
             if(Middle!= null)
-                Middle = Middle+ " ";
+                Middle = Middle+ " ";//sets spaces for middle name string
             #endregion
 
         }
@@ -165,20 +165,20 @@ namespace DataStructures
         {
             String nameToReturn = null;
             String s = " ";
-            switch (format)
+            switch (format)//depending on format choice determines how to order name parts
             {
                 case NameFormat.FIRST:
-                    nameToReturn = Prefix + s + First + s + Middle + Last + Suffix;
+                    nameToReturn = Prefix + s + First + s + Middle + Last + Suffix;//returns first name first
                     break;
                 case NameFormat.LAST:
-                        nameToReturn = Prefix + s + Last +","+ s + First + s + Middle + Suffix;
+                        nameToReturn = Prefix + s + Last +","+ s + First + s + Middle + Suffix;//returns last name first
                     break;
                 case NameFormat.ORIGINAL:
-                    nameToReturn = Original;
+                    nameToReturn = Original;//returns name in original format
                     break;
             }
 
-            return nameToReturn.Trim();
+            return nameToReturn.Trim();//trims name
         }
         /// <summary> 
         /// Used to call NameToString in the First Name First Format
@@ -186,7 +186,7 @@ namespace DataStructures
         /// <returns>Returns a String Representation of the name in the First name first format</returns>
         public String FirstNameFirst()
         {
-            return NameToString(NameFormat.FIRST);
+            return NameToString(NameFormat.FIRST);//gets name in first name first format
         }
 
         /// <summary> 
@@ -195,7 +195,7 @@ namespace DataStructures
         /// <returns>>Returns a String Representation of the name in the Last name first format</returns>
         public String LastNameFirst()
         {
-            return NameToString(NameFormat.LAST);
+            return NameToString(NameFormat.LAST);//gets name in last name first format
         }
         #region IComparable<Name> implementation
         /// TODO fix compare to how it is described in the project file
@@ -205,9 +205,9 @@ namespace DataStructures
         /// <returns>returns int value representing how the names compare. value&lt;0 means one is comes before two, value = 0 names are the same, value &gt;0 name one comes after name two</returns>
         public int Compare(Name One,Name Two)
         {
-            if(!One.First.Equals(Two.First))
+            if(!One.First.Equals(Two.First))//if first are equal
                 return One.First.CompareTo(Two.First);
-            return One.Last.CompareTo(Two.Last);
+            return One.Last.CompareTo(Two.Last);//then compare last
         }
 
         /// <summary>
@@ -219,9 +219,9 @@ namespace DataStructures
         {
             //if last name not equal, base CompareTo on last name only;
             //  else base decision on first name
-            if (!Last.Equals(name.Last))
+            if (!Last.Equals(name.Last))//if last are equal
                 return Last.CompareTo(name.Last);
-            return (First.CompareTo(name.First));
+            return (First.CompareTo(name.First));//then compare first
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace DataStructures
         /// <returns>Boolean True if Equal and false if not equal</returns>
         public bool Equals(Name other)
         {
-            return (First.Equals(other.First) && Last.Equals(other.Last));
+            return (First.Equals(other.First) && Last.Equals(other.Last));//returns if first and last are equal
         }
 
         /// <summary>  Override of Object.Equals</summary>
@@ -241,7 +241,7 @@ namespace DataStructures
         public override bool Equals(object obj)
         {
             if (obj == null)
-                return base.Equals(obj);
+                return base.Equals(obj);//returns if object is equal
             if(!(obj is Name))
                 throw new ArgumentException($"Cannot compare a Name and a {obj.GetType()} object.");
             return Equals(obj as Name);

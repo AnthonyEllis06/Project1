@@ -41,7 +41,7 @@ namespace DataStructures
         public NameList()
         {
             Names = new List<Name>();
-            ListChanged = false;
+            ListChanged = false;//list intial changed value
         }
 
         /// <summary>  copy constructor to make a NameList out of a String Array</summary>
@@ -49,10 +49,10 @@ namespace DataStructures
         public NameList(String[] StringNameArray)
         {
             Names = new List<Name>();
-            int l = StringNameArray.Length;
-            for(int i = 0; i < l; i++)
+            int length = StringNameArray.Length;//gets string array length
+            for(int i = 0; i < length; i++)//for each item in array
             {
-                Names.Add(new Name(StringNameArray[i]));
+                Names.Add(new Name(StringNameArray[i]));//adds name to name list
             }
             ListChanged = false;
         }
@@ -64,8 +64,8 @@ namespace DataStructures
         /// <param name="NewName">The Name object to be added</param>
         public void Add(Name NewName)
         {
-            Names.Add(NewName);
-            ListChanged = true;
+            Names.Add(NewName); //adds name to name list
+            ListChanged = true; //changes list changed value
         }        
         /// <summary>
         /// Removes the A name Equal to string passed in from the NameList
@@ -74,9 +74,9 @@ namespace DataStructures
         /// <returns>Returns boolean true if item removed and boolean false if not removed</returns>
         public bool Remove(String NameString)
         {
-            Name NameToRemove = new Name(NameString);
+            Name NameToRemove = new Name(NameString);//gets name to remove
             ListChanged = true;
-            return Names.Remove(NameToRemove);
+            return Names.Remove(NameToRemove);//removes name from list
         }        
         /// <summary>
         /// Finds all names that are similar to a partial name
@@ -87,14 +87,14 @@ namespace DataStructures
         /// format is chosen</returns>
         public NameList FindNames(String partialName, NameFormat format = NameFormat.FIRST)
         {
-            partialName.Trim();
+            partialName.Trim();//trims partial name
             
             NameList foundNames = new NameList();
             String tempName;
             foreach(Name n in Names)
             {
-                tempName = n.NameToString(NameFormat.ORIGINAL);
-                if(tempName.Contains(partialName))
+                tempName = n.NameToString(NameFormat.ORIGINAL);//converts name to string for comparison
+                if(tempName.Contains(partialName)) //checks if name contains any of partial name
                     foundNames = foundNames+n;
             }
 
@@ -105,11 +105,11 @@ namespace DataStructures
         /// <returns>returns a string List sorted by first name</returns>
         public List<String> SortFirst()
         {
-            Names.Sort(new Name());
+            Names.Sort(new Name());//sorts name list by first name
             List<String> StringNames = new List<String>();
             foreach (Name n in Names)
             {
-                StringNames.Add(n.FirstNameFirst());
+                StringNames.Add(n.FirstNameFirst());//adds names to a list of names 
             }
             return StringNames;
         }
@@ -118,11 +118,11 @@ namespace DataStructures
         /// <returns>returs a string list with all the names sorted by last name</returns>
         public List<String> SortLast()
         {
-            Names.Sort();
+            Names.Sort();//sorts by last name
             List<String> StringNames = new List<String>();
             foreach (Name n in Names)
             {
-                StringNames.Add(n.LastNameFirst());
+                StringNames.Add(n.LastNameFirst());//adds to list of names to display
             }
             return StringNames;
         }
@@ -143,7 +143,7 @@ namespace DataStructures
             String[] stringNameArray = new String[Count];
             for (int i = 0; i < Count; i++)
             {
-                stringNameArray[i] = Names[i].NameToString(NameFormat.ORIGINAL);
+                stringNameArray[i] = Names[i].NameToString(NameFormat.ORIGINAL);//adds names from name list to string array
             }
             return stringNameArray;
         }
@@ -151,7 +151,7 @@ namespace DataStructures
         /// <summary>  method to set list change to true that is easier to read. also for testing purposes</summary>
         public void ListChange()
         {
-            ListChanged = true;
+            ListChanged = true;//sets list change to true
         }
         #region Indexers
 
@@ -166,13 +166,13 @@ namespace DataStructures
             {
                 if (index < 0 || index > Count)
                     throw new IndexOutOfRangeException($"Subscript {index} is not between 0 and {Count} and therefor invalid");
-                return Names[index];
+                return Names[index];//returns value at index
             }
             set
             {
                 if (index < 0 || index > Count)
                     throw new IndexOutOfRangeException($"Subscript {index} is not between 0 and {Count} and therefor invalid");
-                Names[index] = value;
+                Names[index] = value;//sets name to value 
                 ListChanged = true;
             }
         }
@@ -187,7 +187,7 @@ namespace DataStructures
             {
                 Name name = new Name(strName);
                 if (Names.Contains(name))
-                    return Names[Names.IndexOf(name)];
+                    return Names[Names.IndexOf(name)];//if contains name return index of name
                 else
                     return null;
             }
@@ -201,9 +201,9 @@ namespace DataStructures
         /// <returns>  returns the NameList that was added to</returns>
         public static NameList operator+(NameList CurrNameList,Name NewName)
         {
-            CurrNameList.Names.Add(NewName);
+            CurrNameList.Names.Add(NewName);//adds name to name list
             CurrNameList.ListChange();
-            return CurrNameList;
+            return CurrNameList;//returns current name list
         }
 
         /// <summary>  implements the - operator to remove names from the list</summary>
@@ -212,8 +212,8 @@ namespace DataStructures
         /// <returns>  the namelist after the name is removed</returns>
         public static NameList operator-(NameList CurrNameList,Name NameToRemove)
         {
-            if (CurrNameList.Names.Contains(NameToRemove))
-                CurrNameList.Names.Remove(NameToRemove);
+            if (CurrNameList.Names.Contains(NameToRemove))//if list contains name
+                CurrNameList.Names.Remove(NameToRemove);//removes the name
             CurrNameList.ListChange();
             return CurrNameList;
         }
